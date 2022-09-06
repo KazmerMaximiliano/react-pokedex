@@ -15,7 +15,7 @@ export const AppRouter = () => {
   return (
     <Routes>
       <Route path="/" element={<PokemonList />} />
-      <Route path="/pokemon" element={<PokemonDetails />} />
+      <Route path="/pokemon/:id" element={<PokemonDetails />} />
     </Routes>
   );
 };

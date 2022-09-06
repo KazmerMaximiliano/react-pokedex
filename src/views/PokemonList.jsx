@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Pokeball } from "../components/Pokeball";
 
 export const PokemonList = () => {
@@ -6,24 +7,25 @@ export const PokemonList = () => {
   const [page, setPage] = useState(0);
   const [pokemons, setPokemons] = useState([]);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     setIsLoading(true);
-    setTimeout(() => {
-      fetch(`https://pokeapi.co/api/v2/pokemon?limit=10&offset=${page * 10}`)
-        .then((response) => response.json())
-        .then((data) => {
-          let pokemonList = data.results.map((e) => {
-            return {
-              name: e.name,
-              image: null,
-              url: e.url,
-            };
-          });
-
-          setPokemons(pokemonList);
-          setIsLoading(false);
+    fetch(`https://pokeapi.co/api/v2/pokemon?limit=10&offset=${page * 10}`)
+      .then((response) => response.json())
+      .then((data) => {
+        let pokemonList = data.results.map((e) => {
+          return {
+            id: null,
+            name: e.name,
+            image: null,
+            url: e.url,
+          };
         });
-    }, 2000);
+
+        setPokemons(pokemonList);
+        setIsLoading(false);
+      });
   }, [page]);
 
   useEffect(() => {
@@ -34,6 +36,7 @@ export const PokemonList = () => {
           .then((data) => {
             let auxPokemons = [...pokemons];
             let pokemonIndex = auxPokemons.indexOf(e);
+            auxPokemons[pokemonIndex].id = data.id;
             auxPokemons[pokemonIndex].image = data.sprites.front_default;
 
             setPokemons(auxPokemons);
@@ -49,7 +52,13 @@ export const PokemonList = () => {
       <div className="pokemon-list">
         {pokemons.map((e, idx) => {
           return (
-            <div key={idx} className="pokemon-card">
+            <div
+              key={idx}
+              className="pokemon-card"
+              onClick={() => {
+                navigate(`/pokemon/${e.id}`);
+              }}
+            >
               <div className="pokemon-image">
                 <img
                   src={
